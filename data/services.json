@@ -1,0 +1,27 @@
+[
+    {
+        "name" : "Hidratação",
+        "price" : 70.00,
+        "duration" : 30
+    },
+    {
+        "name" : "Corte com Lavagem",
+        "price" : 100.00,
+        "duration" : 60
+    },
+    {
+        "name" : "Escova",
+        "price" : 70.00,
+        "duration" : 60
+    },
+    {
+        "name" : "Manicure",
+        "price" : 40.00,
+        "duration" : 60
+    },
+    {
+        "name" : "Hidratação",
+        "price" : 30.00,
+        "duration" : 30
+    }
+]
