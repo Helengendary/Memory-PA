@@ -1,8 +1,18 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { Image, StyleSheet, Platform, Text } from 'react-native';
 
 export default function HomeScreen() {
+
+  const icone = {
+    uri: '../../assets/mar.jpg'
+};
+
   return (
     <>
+
+    <Image source={icone} style={{width: 200, height: 100, marginBottom: 10}} />
+
+    <Text>fsdfsdf</Text>
+
     </>
   );
 }
