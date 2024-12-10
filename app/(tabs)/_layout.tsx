@@ -16,6 +16,21 @@ export default function TabLayout() {
         name="explore"
         options={{
           title: 'Explore',
+          headerShown: false
+        }}
+      />
+      <Tabs.Screen
+        name="login"
+        options={{
+          title: 'login',
+          headerShown: false
+        }}
+      />
+      <Tabs.Screen
+        name="register"
+        options={{
+          title: 'register',
+          headerShown: false
         }}
       />
     </Tabs>
