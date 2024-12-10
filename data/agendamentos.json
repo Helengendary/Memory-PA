@@ -2,26 +2,25 @@
     {
         "name" : "Hidratação",
         "price" : 70.00,
-        "duration" : 30
+        "duration" : 30,
+        "date" : "2024-12-14T10:40:00"
     },
     {
         "name" : "Corte com Lavagem",
         "price" : 100.00,
-        "duration" : 60
+        "duration" : 60,
+        "date" : "2024-12-14T10:40:00"
     },
     {
         "name" : "Escova",
         "price" : 70.00,
-        "duration" : 60
+        "duration" : 60,
+        "date" : "2024-12-14T10:40:00"
     },
     {
         "name" : "Manicure",
         "price" : 40.00,
-        "duration" : 60
-    },
-    {
-        "name" : "Hidratação",
-        "price" : 30.00,
-        "duration" : 30
+        "duration" : 60,
+        "date" : "2024-12-14T10:40:00"
     }
 ]
