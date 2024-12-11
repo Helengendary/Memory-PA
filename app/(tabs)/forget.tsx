@@ -13,31 +13,32 @@ export default function LoginScreen() {
     return (
         <>
             <View style={{flex: 1, alignItems: "center"}}>
-                <View style={{flex: 1, justifyContent: "center"}}>
-                    <Text>Um E-mail de verificação foi mandado para {email}. Digite o código de verificação abaixo</Text>
+                <View style={{flex: 1.5, justifyContent: "center", paddingHorizontal: 40}}>
+                    <Text style={{fontSize: 18, textAlign: "center"}}>Um E-mail de verificação foi mandado para {email}. Digite o código de verificação abaixo</Text>
                 </View>
-                <View style={{flex: 2, flexDirection: "row", gap: 10}}>
-                <CodeField
-                    ref={ref}
-                    {...props}
-                    value={value}
-                    onChangeText={setValue}
-                    cellCount={6}
-                    rootStyle={styles.codeFieldRoot}
-                    keyboardType="number-pad"
-                    textContentType="oneTimeCode"
-                    testID="my-code-input"
-                    renderCell={({index, symbol, isFocused}) => (
-                    <Text
-                        key={index}
-                        style={[styles.cell, isFocused && styles.focusCell]}
-                        onLayout={ getCellOnLayoutHandler(index)}>
-                        {symbol || (isFocused ? <Cursor/> : null)}
-                    </Text>
-                    )}
-                />
+                <View style={{flex: 1.5, justifyContent: "space-around", alignItems: "center"}}>
+                    <CodeField
+                        ref={ref}
+                        {...props}
+                        value={value}
+                        onChangeText={setValue}
+                        cellCount={6}
+                        rootStyle={styles.codeFieldRoot}
+                        keyboardType="number-pad"
+                        textContentType="oneTimeCode"
+                        testID="my-code-input"
+                        renderCell={({index, symbol, isFocused}) => (
+                        <Text
+                            key={index}
+                            style={[styles.cell, isFocused && styles.focusCell]}
+                            onLayout={ getCellOnLayoutHandler(index)}>
+                            {symbol || (isFocused ? <Cursor/> : null)}
+                        </Text>
+                        )}
+                    />
+                    <Text>Reeviar</Text>
                 </View>
-                <View style={{ flex: 0.5, alignItems: "center"}}>
+                <View style={{ flex: 1, alignItems: "center"}}>
                     <TouchableOpacity style={styles.button}>Registre-se</TouchableOpacity>
                 </View>
             </View>
