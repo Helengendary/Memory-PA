@@ -33,6 +33,13 @@ export default function TabLayout() {
           headerShown: false
         }}
       />
+      <Tabs.Screen
+        name="forget"
+        options={{
+          title: 'forget',
+          headerShown: false
+        }}
+      />
     </Tabs>
   );
 }
