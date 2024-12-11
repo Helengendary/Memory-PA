@@ -12,11 +12,11 @@ export default function LoginScreen() {
                 <View style={{flex: 1, justifyContent: "center"}}>
                     <Image style={styles.image} source={require("../../assets/logo.jpg")} width={200} height={200}></Image>
                 </View>
-                <View style={{flex: 1, justifyContent: "center", gap: 20}}>
+                <View style={{flex: 1, justifyContent: "center", alignItems: "center", gap: 20}}>
                     <TextInput style={styles.input} placeholder="Digite seu nome ou E-mail"/>
-                    <View style={{flexDirection: "row", alignItems: "center"}}>
+                    <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
                         <TextInput style={styles.input} placeholder="Digite sua Senha" secureTextEntry={show}/>
-                        <TouchableOpacity style={{position: "relative", right: 30, }}>
+                        <TouchableOpacity onPress={() => {setShow(!show)}} style={{position: "absolute", right: 20, }}>
                             <Text style={styles.oio}>👁</Text>
                         </TouchableOpacity>
                     </View>
