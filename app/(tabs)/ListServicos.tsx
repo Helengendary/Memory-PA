@@ -40,6 +40,12 @@ export default function ListServicos()
         }
     }
 
+    function SelectService(Service : Servico)
+    {
+        SetSelected((prev) =>(prev == Service ? null : Service));
+        setTime("");
+    }
+
     return (
     <>
         <View style={styles.TitleContainer}>
@@ -60,7 +66,7 @@ export default function ListServicos()
                     })
                     return(
                         <View style={[styles.Card, {borderColor: Color?.color}]}>
-                            <Pressable onPress={() => SetSelected(item.item)}>
+                            <Pressable onPress={() => SelectService(item.item)}>
                                 <Text style={styles.MainText}>{item.item.name}</Text>
                                 <View style={styles.Line}>
                                     <Text style={styles.Price}>R$ {item.item.price.toFixed(2)}</Text>
@@ -94,7 +100,7 @@ export default function ListServicos()
                                         <Pressable style={styles.ConfirmBtn}>
                                             Confirmar
                                         </Pressable>
-                                        <Pressable style={styles.CancelBtn}>
+                                        <Pressable style={styles.CancelBtn} onPress={() => setTime("")}>
                                             Cancelar
                                         </Pressable>
                                     </View>
