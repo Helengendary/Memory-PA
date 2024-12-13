@@ -5,7 +5,7 @@ import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-
 
 export default function LoginScreen() {
 
-    const [email, setEmail] = useState("");
+    const [email, setEmail] = useState("placeholder@email.com");
     const [value, setValue] = useState('');
     const ref = useBlurOnFulfill({value, cellCount: 6});
     const [props, getCellOnLayoutHandler] = useClearByFocusCell({ value, setValue, });
@@ -14,7 +14,7 @@ export default function LoginScreen() {
         <>
             <View style={{flex: 1, alignItems: "center"}}>
                 <View style={{flex: 1.5, justifyContent: "center", paddingHorizontal: 40}}>
-                    <Text style={{fontSize: 18, textAlign: "center"}}>Um E-mail de verificação foi mandado para {email}. Digite o código de verificação abaixo</Text>
+                    <Text style={{fontSize: 20, textAlign: "center"}}>Um E-mail de verificação foi mandado para {email}. Digite o código de verificação abaixo</Text>
                 </View>
                 <View style={{flex: 1.5, justifyContent: "space-around", alignItems: "center"}}>
                     <CodeField
@@ -68,9 +68,10 @@ const styles = StyleSheet.create({
     },
     cell: {
         width: 40,
-        height: 40,
+        height: 50,
         lineHeight: 38,
         fontSize: 24,
+        marginHorizontal: 4,
         borderWidth: 2,
         borderColor: '#00000030',
         textAlign: 'center',
