@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Image, Platform, View, FlatList, Text, Pressable } from 'react-native';
 import Colors from "@/data/colors.json"
+import { doc, getDocs, collection } from "firebase/firestore"
+import { Firestore } from '@/services/firebase';
 
 interface Agendamento
 {
@@ -14,10 +16,11 @@ interface Agendamento
 export default function Agendamentos()
 {
     const [Data, SetData] = useState<Agendamento[]>([]);
+
     useEffect(() =>
     {
-
-    });
+        
+    },[]);
 
     return (
     <>
