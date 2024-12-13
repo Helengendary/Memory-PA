@@ -6,22 +6,38 @@ import Colors from "@/data/colors.json"
 import PickerDate from '@/components/PickerDate';
 import Times from "@/data/times.json"
 
-type Service =
+interface Servico
 {
+    id : number;
     name : string;
     price : number;
     duration : number;
-}[]
+}
+
+interface Agendamento
+{
+    service : Servico
+    time : string;
+    date : string;
+}
 
 export default function ListServicos()
 {
-    const Selected = 2;
     const [time, setTime] = useState<string>("");
     const [date, setDate] = useState<Date>(new Date());
+    const [Selected, SetSelected] = useState<Servico | null>(null)
 
-    function UpdateDate(Date : Date)
+    function findTimes()
     {
-        Date.toISOString().substring(0, 10)
+        let dateString = date.toISOString().substring(0, 10);
+    }
+
+    function SalvarAgendamento()
+    {
+     //   const Ag : Agendamento =
+        {
+
+        }
     }
 
     return (
@@ -44,24 +60,45 @@ export default function ListServicos()
                     })
                     return(
                         <View style={[styles.Card, {borderColor: Color?.color}]}>
-                            <Text style={styles.MainText}>{item.item.name}</Text>
-                            <View style={styles.Line}>
-                                <Text style={styles.Price}>R$ {item.item.price.toFixed(2)}</Text>
-                                <Text style={{fontSize: 16}}>{item.item.duration} min</Text>
-                            </View>
-                            {item.item.id == Selected ?
+                            <Pressable onPress={() => SetSelected(item.item)}>
+                                <Text style={styles.MainText}>{item.item.name}</Text>
+                                <View style={styles.Line}>
+                                    <Text style={styles.Price}>R$ {item.item.price.toFixed(2)}</Text>
+                                    <Text style={{fontSize: 16}}>{item.item.duration} min</Text>
+                                </View>
+                            </Pressable>
+                            {item.item.id == Selected?.id ?
                             <>
-                                <PickerDate onChange={(date : Date) => setDate(date)} value={date}/>
+                                <PickerDate onChange={(date : Date) => {setDate(date); setTime("");}} value={date}/>
                                 <View style={styles.TimeContainer}>
                                     {Times.map((item) =>
                                     {
                                         return(
                                         <Pressable onPress={() => setTime(item)} key={item}>
-                                            <Text style={styles.Time}>{item}</Text>
+                                            <Text
+                                                style={
+                                                [
+                                                    styles.Time,
+                                                    item == time ? {backgroundColor: "#b07cba"} : {backgroundColor: "#804c8a"}
+                                                ]}
+                                            >
+                                                {item}
+                                            </Text>
                                         </Pressable>
                                         )
                                     })}
                                 </View>
+                                {time == "" ?
+                                    <></> : 
+                                    <View style={{flexDirection: "row", gap: 10}}>
+                                        <Pressable style={styles.ConfirmBtn}>
+                                            Confirmar
+                                        </Pressable>
+                                        <Pressable style={styles.CancelBtn}>
+                                            Cancelar
+                                        </Pressable>
+                                    </View>
+                                }
                             </> 
                             : <></>}
                         </View>
@@ -121,7 +158,6 @@ const styles = StyleSheet.create(
     },
     Time:
     {
-        backgroundColor: "#804c8a",
         color: "#ffffff",
         width: 80,
         fontSize: 16,
@@ -136,5 +172,31 @@ const styles = StyleSheet.create(
         flexWrap: "wrap",
         gap: 10,
         justifyContent: 'center'
+    },
+    ConfirmBtn:
+    {
+        backgroundColor: "#20c020",
+        borderRadius: 16,
+        color: "#ffffff",
+        fontSize: 20,
+        fontWeight: "bold",
+        fontFamily: "arial",
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        width: 128,
+        textAlign: "center"
+    },
+    CancelBtn:
+    {
+        backgroundColor: "#C02020",
+        borderRadius: 16,
+        color: "#ffffff",
+        fontSize: 20,
+        fontWeight: "bold",
+        fontFamily: "arial",
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        width: 108,
+        textAlign: "center"
     }
 });
