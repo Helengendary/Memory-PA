@@ -34,13 +34,20 @@ export default function ListServicos()
 
     function SalvarAgendamento()
     {
-     //   const Ag : Agendamento =
+        if(Selected == null || time == "")
         {
-
+            return;
         }
+        const Ag : Agendamento =
+        {
+            service: Selected,
+            date: date.toISOString().substring(0, 10),
+            time: time
+        }
+        SelectService(null);
     }
 
-    function SelectService(Service : Servico)
+    function SelectService(Service : Servico | null)
     {
         SetSelected((prev) =>(prev == Service ? null : Service));
         setTime("");
@@ -75,7 +82,10 @@ export default function ListServicos()
                             </Pressable>
                             {item.item.id == Selected?.id ?
                             <>
-                                <PickerDate onChange={(date : Date) => {setDate(date); setTime("");}} value={date}/>
+                                <View style={{flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
+                                    <PickerDate onChange={(date : Date) => {setDate(date); setTime("");}} value={date}/>
+                                    <Text style={{width: "50%", textAlign: "center", fontSize: 24}}>{time}</Text>
+                                </View>
                                 <View style={styles.TimeContainer}>
                                     {Times.map((item) =>
                                     {
@@ -97,7 +107,7 @@ export default function ListServicos()
                                 {time == "" ?
                                     <></> : 
                                     <View style={{flexDirection: "row", gap: 10}}>
-                                        <Pressable style={styles.ConfirmBtn}>
+                                        <Pressable style={styles.ConfirmBtn} onPress={() => SalvarAgendamento()}>
                                             Confirmar
                                         </Pressable>
                                         <Pressable style={styles.CancelBtn} onPress={() => setTime("")}>
