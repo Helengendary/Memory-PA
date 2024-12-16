@@ -5,6 +5,8 @@ import Services from "@/data/servicos.json"
 import Colors from "@/data/colors.json"
 import PickerDate from '@/components/PickerDate';
 import Times from "@/data/times.json"
+import {doc, getDocs, addDoc, setDoc, getDoc, collection} from 'firebase/firestore'
+import { Firestore } from '@/services/firebase';
 
 interface Servico
 {
@@ -30,6 +32,22 @@ export default function ListServicos()
     function findTimes()
     {
         let dateString = date.toISOString().substring(0, 10);
+        getDocs(collection(Firestore, "Agendamentos"))
+        .then((data) =>
+        {
+            console.log(
+                data.docs.filter((item) =>
+                {
+                    if(item.data().date == dateString)
+                    {
+                        return item
+                    }
+                }).map((item) =>
+                {
+                    return item.data().time;
+                }).sort((a : string, b : string) => (a.localeCompare(b)))
+            )
+        })
     }
 
     function SalvarAgendamento()
@@ -45,12 +63,15 @@ export default function ListServicos()
             time: time
         }
         SelectService(null);
+
+        addDoc(collection(Firestore, "Agendamentos"), Ag);
     }
 
     function SelectService(Service : Servico | null)
     {
         SetSelected((prev) =>(prev == Service ? null : Service));
         setTime("");
+        findTimes()
     }
 
     return (
@@ -82,9 +103,15 @@ export default function ListServicos()
                             </Pressable>
                             {item.item.id == Selected?.id ?
                             <>
-                                <View style={{flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
+                                <View style={styles.DatetimeContainer}>
+                                    <View style={styles.TimeDisplay}>
+                                        <Text style={{fontSize: time == "" ? 17 : 12, color: "#49454f"}}>HH:MM</Text>
+                                        {time != "" ? 
+                                        <Text style={{fontSize: 17}}>{time}</Text>
+                                        : <></>
+                                        }
+                                    </View>
                                     <PickerDate onChange={(date : Date) => {setDate(date); setTime("");}} value={date}/>
-                                    <Text style={{width: "50%", textAlign: "center", fontSize: 24}}>{time}</Text>
                                 </View>
                                 <View style={styles.TimeContainer}>
                                     {Times.map((item) =>
@@ -214,5 +241,26 @@ const styles = StyleSheet.create(
         paddingVertical: 2,
         width: 108,
         textAlign: "center"
+    },
+    DatetimeContainer:
+    {
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "stretch",
+        backgroundColor: "#e7e0ec",
+        flexWrap: "wrap",
+        height: "auto",
+        maxWidth: "100%"
+    },
+    TimeDisplay:
+    {
+        justifyContent: "center",
+        alignItems: "center",
+        borderColor: "#98929d",
+        borderBottomWidth: 1,
+        minWidth: "auto",
+        maxHeight: "auto",
+        flex: 1,
+        fontFamily: "sans-serif"
     }
 });
