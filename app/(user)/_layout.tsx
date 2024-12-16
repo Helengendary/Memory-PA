@@ -8,25 +8,6 @@ export default function TabLayout() {
     <>
     <Tabs >
       <Tabs.Screen
-        
-        name="profile"
-        options={{
-          headerShown: false,
-          title: ' ',
-          tabBarIcon: () => (
-            <>
-              <Image source={require('../../assets/profile.png')} />
-
-            </>
-          ),
-          tabBarStyle: {
-            backgroundColor: "#824C8A",
-            padding: 10,
-            height: "auto"
-          }
-        }}
-      />
-      <Tabs.Screen
         name="index"
         options={{
           headerShown: false,
@@ -77,6 +58,23 @@ export default function TabLayout() {
           }
         }}
       />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            headerShown: false,
+            title: ' ',
+            tabBarIcon: () => (
+              <>
+                <Image source={require('../../assets/profile.png')} />
+              </>
+            ),
+            tabBarStyle: {
+              backgroundColor: "#824C8A",
+              padding: 10,
+              height: "auto"
+            }
+          }}
+        />
     </Tabs>
     </>
   );

@@ -14,9 +14,9 @@ export default function LoginScreen() {
     const auth = Auth;
 
     const signUp = () => {
-        signInWithEmailAndPassword(auth, email, pass)
+        createUserWithEmailAndPassword(auth, email, pass)
         .then(() => {
-            router.push("/(tabs)");
+            router.push("/(user)");
         }).catch((err) => {
             alert(err.message);
         })
@@ -32,13 +32,13 @@ export default function LoginScreen() {
                     <TextInput style={styles.input} onChangeText={setEmail} value={email} placeholder="Digite seu E-mail"/>
                     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
                         <TextInput style={styles.input} onChangeText={setPass} value={pass} placeholder="Digite sua Senha" secureTextEntry={show}/>
-                        <TouchableOpacity onPress={() => {setShow(!show)}} style={{position: "absolute", right: 20, }}>
+                        <TouchableOpacity onPress={() => {setShow(!show)}} style={{position: "absolute", right: 20}}>
                             <Text style={styles.oio}>👁</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
                         <TextInput style={styles.input} onChangeText={setConfirmPass} value={confirmPass} placeholder="Confirme sua Senha" secureTextEntry={show}/>
-                        <TouchableOpacity onPress={() => {setShow(!show)}} style={{position: "absolute", right: 20, }}>
+                        <TouchableOpacity onPress={() => {setShow(!show)}} style={{position: "absolute", right: 20}}>
                             <Text style={styles.oio}>👁</Text>
                         </TouchableOpacity>
                     </View>
@@ -47,7 +47,7 @@ export default function LoginScreen() {
                     <TouchableOpacity onPress={signUp} style={styles.button}>Register</TouchableOpacity>
                     <View style={{flexDirection: "row"}}>
                         Já possui uma conta?
-                        <Link style={{ fontWeight: "bold" }} href={"/login"}> Login</Link>
+                        <Link style={{ fontWeight: "bold" }} href={"/"}> Login</Link>
                     </View>
                 </View>
             </View>
