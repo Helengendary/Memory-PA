@@ -25,7 +25,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="agenda"
+        name="gendamentos"
         options={{
           headerShown: false,
           title: '',

@@ -15,8 +15,6 @@ export default function HomeScreen() {
         <Text style={styles.info}>Fone: (41) 3340-2660</Text>
       
         <Image source={require("@/assets/salao.jpeg")} width={300} height={200}/>
-        <Image source={require("@/assets/salao.jpeg")} width={300} height={200}/>
-        <Image source={require("@/assets/salao.jpeg")} width={300} height={200}/>
       </View>
     </ScrollView>
 

@@ -1,16 +1,35 @@
 import { Image, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import * as ImagePicker from 'expo-image-picker'
+import { useState } from 'react';
 
 export default function HomeScreen() {
 
+  const [image, setImage] = useState<string | null>(null);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images', 'videos'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  }
+
   return (
     <>
-
+    <TouchableOpacity onPress={pickImage}>
     <View style={styles.imageProfile}>
-      <Image source={require('../../assets/default.png')} style={{width:200, height:200}} />
+      <Image source={image? { uri: image } : require("@/assets/default.png")} style={{width:200, height:200, borderRadius: "50%"}} />
     </View>
+    </TouchableOpacity>
 
     <View>
-
       <View style={styles.campo}>
         <Text style={styles.miniText}>Username</Text>
         <Text style={styles.bigText}>Helena Picinin</Text>
@@ -29,9 +48,8 @@ export default function HomeScreen() {
       <View style={[styles.campo, styles.button]}>
         <View>
           <Text style={styles.miniText}>CPF</Text>
-          <Text style={styles.bigText}>xxx.xxx.xxx-xx</Text>
+          <Text style={styles.bigText}>123.456.789-55</Text>
         </View>
-        <TouchableOpacity><Image source={require("@/assets/eye.png")}/></TouchableOpacity> 
       </View>
     </View>
 
@@ -49,13 +67,13 @@ const styles = StyleSheet.create({
     paddingLeft:30
   },
   bigText: {
-    fontSize:25
+    fontSize: 20
   },
   imageProfile: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: 30,
+    paddingTop: 60,
     paddingBottom: 30
   },
   button: {

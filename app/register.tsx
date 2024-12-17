@@ -1,6 +1,6 @@
 import { Link, router } from "expo-router";
 import { useState } from "react";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { StyleSheet, Image, View, TextInput, TouchableOpacity, Text } from "react-native"
 import { Auth } from "@/services/firebase";
 
@@ -11,12 +11,10 @@ export default function LoginScreen() {
     const [ pass, setPass ] = useState('')
     const [ confirmPass, setConfirmPass ] = useState('')
 
-    const auth = Auth;
-
     const signUp = () => {
-        createUserWithEmailAndPassword(auth, email, pass)
+        createUserWithEmailAndPassword(Auth, email, pass)
         .then(() => {
-            router.push("/(user)");
+            router.navigate('/');
         }).catch((err) => {
             alert(err.message);
         })
@@ -26,7 +24,7 @@ export default function LoginScreen() {
         <>
             <View style={{flex: 1, alignItems: "center"}}>
                 <View style={{flex: 1, justifyContent: "center"}}>
-                    <Image style={styles.image} source={require("../../assets/logo.jpg")} width={200} height={200}></Image>
+                    <Image style={styles.image} source={require("@/assets/logo.jpg")} width={200} height={200}></Image>
                 </View>
                 <View style={{flex: 1, justifyContent: "center", alignItems: "center", gap: 20}}>
                     <TextInput style={styles.input} onChangeText={setEmail} value={email} placeholder="Digite seu E-mail"/>
@@ -44,9 +42,9 @@ export default function LoginScreen() {
                     </View>
                 </View>
                 <View style={{alignItems: "center", flex: 1}}>
-                    <TouchableOpacity onPress={signUp} style={styles.button}>Register</TouchableOpacity>
+                    <TouchableOpacity onPress={signUp} style={styles.button}><Text style={{color: "white"}}>Register</Text></TouchableOpacity>
                     <View style={{flexDirection: "row"}}>
-                        Já possui uma conta?
+                        <Text>Já possui uma conta?</Text>
                         <Link style={{ fontWeight: "bold" }} href={"/"}> Login</Link>
                     </View>
                 </View>

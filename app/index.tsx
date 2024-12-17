@@ -1,31 +1,47 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, Image, View, TextInput, TouchableOpacity, Text } from "react-native"
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { Auth } from "@/services/firebase";
 
 export default function LoginScreen() {
 
     const [show, setShow] = useState(true);
+    const [mail, setMail] = useState("");
+    const [pass, setPass] = useState("");
+
+    const signIn = () => {
+        signInWithEmailAndPassword(Auth, mail, pass)
+        .then(() => {
+            router.push("/(user)");
+        }).catch((err) => {
+            alert(err.message);
+        })
+    }
 
     return (
         <>
             <View style={{flex: 1, alignItems: "center"}}>
                 <View style={{flex: 1, justifyContent: "center"}}>
-                    <Image style={styles.image} source={require("../../assets/logo.jpg")} width={200} height={200}></Image>
+                    <Image style={styles.image} source={require("@/assets/logo.jpg")} width={200} height={200}></Image>
                 </View>
                 <View style={{flex: 1, justifyContent: "center", alignItems: "center", gap: 20}}>
-                    <TextInput style={styles.input} placeholder="Digite seu nome ou E-mail"/>
+                    <TextInput onChangeText={setMail} style={styles.input} placeholder="Digite seu nome ou E-mail"/>
                     <View style={{flexDirection: "row", alignItems: "center", justifyContent: "center"}}>
-                        <TextInput style={styles.input} placeholder="Digite sua Senha" secureTextEntry={show}/>
+                        <TextInput onChangeText={setPass} style={styles.input} placeholder="Digite sua Senha" secureTextEntry={show}/>
                         <TouchableOpacity onPress={() => {setShow(!show)}} style={{position: "absolute", right: 20, }}>
                             <Text style={styles.oio}>👁</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
                 <View style={{alignItems: "center", flex: 1}}>
-                    <TouchableOpacity style={styles.button}>Login</TouchableOpacity>
-                    <View style={{flexDirection: "row"}}>
-                        Não tem conta?
-                        <Link style={{ fontWeight: "bold" }} href={"/register"}> Registre-se</Link>
+                    <TouchableOpacity onPress={signIn} style={styles.button}><Text style={{color: "white"}}>Login</Text></TouchableOpacity>
+                    <View style={{alignItems: "center", gap: 10}}>
+                        <View style={{flexDirection: "row"}}>
+                            <Text>Não tem conta?</Text>
+                            <Link style={{ fontWeight: "bold" }} href={"/register"}><Text>Registre-se</Text></Link>
+                        </View>
+                        <Link style={{ fontWeight: "bold" }} href={"/forget"}><Text>Esqueceu sua Senha?</Text></Link>
                     </View>
                 </View>
             </View>
