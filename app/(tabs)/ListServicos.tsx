@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Image, Platform, View, FlatList, Text, Pressable } from 'react-native';
 import { DatePickerInput, TimePickerModal } from 'react-native-paper-dates';
 import Services from "@/data/servicos.json"
@@ -14,6 +14,7 @@ interface Servico
     name : string;
     price : number;
     duration : number;
+    type : string;
 }
 
 interface Agendamento
@@ -28,6 +29,7 @@ export default function ListServicos()
     const [time, setTime] = useState<string>("");
     const [date, setDate] = useState<Date>(new Date());
     const [Selected, SetSelected] = useState<Servico | null>(null)
+    const [ReservedTimes, SetReservedTimes] = useState<boolean[]>([]);
 
     function findTimes()
     {
@@ -35,20 +37,41 @@ export default function ListServicos()
         getDocs(collection(Firestore, "Agendamentos"))
         .then((data) =>
         {
-            console.log(
-                data.docs.filter((item) =>
+            const reserves = data.docs.filter((item) =>
+            {
+                if(item.data().date == dateString)
                 {
-                    if(item.data().date == dateString)
-                    {
-                        return item
-                    }
-                }).map((item) =>
+                    return item
+                }
+            }).map((item) =>
+            {
+                return item.data().time;
+            }).sort((a : string, b : string) => (a.localeCompare(b)))
+
+            //console.log(reserves)
+
+            let ResTimes = []
+
+            for(let i = 0, j = 0; i < Times.length; ++i)
+            {
+                if(j < reserves.length && Times[i] == reserves[j])
                 {
-                    return item.data().time;
-                }).sort((a : string, b : string) => (a.localeCompare(b)))
-            )
-        })
+                    ResTimes.push(false)
+                    ++j;
+                }else
+                {
+                    ResTimes.push(true)
+                }
+            }
+
+            SetReservedTimes(ResTimes);
+        });
     }
+
+    useEffect(() =>
+    {
+        findTimes();
+    }, [date, Selected])
 
     function SalvarAgendamento()
     {
@@ -71,7 +94,14 @@ export default function ListServicos()
     {
         SetSelected((prev) =>(prev == Service ? null : Service));
         setTime("");
-        findTimes()
+        findTimes();
+    }
+
+    function CheckTimes()
+    {
+        let ret = false;
+        ReservedTimes.forEach(item => {if(item){ret = true}});
+        return ret;
     }
 
     return (
@@ -111,34 +141,40 @@ export default function ListServicos()
                                         : <></>
                                         }
                                     </View>
-                                    <PickerDate onChange={(date : Date) => {setDate(date); setTime("");}} value={date}/>
+                                    <PickerDate onChange={(date : Date) => {setDate(date); setTime(""); findTimes();}} value={date}/>
                                 </View>
                                 <View style={styles.TimeContainer}>
-                                    {Times.map((item) =>
                                     {
-                                        return(
-                                        <Pressable onPress={() => setTime(item)} key={item}>
-                                            <Text
-                                                style={
-                                                [
-                                                    styles.Time,
-                                                    item == time ? {backgroundColor: "#b07cba"} : {backgroundColor: "#804c8a"}
-                                                ]}
-                                            >
-                                                {item}
-                                            </Text>
-                                        </Pressable>
-                                        )
-                                    })}
+                                        Times.map((item, index) =>
+                                        {
+                                            if(!ReservedTimes[index]|| Date.now() > Date.parse(date.toISOString().substring(0, 10) + "T" + item))
+                                            {
+                                                return(<></>)
+                                            }
+                                            return(
+                                            <Pressable onPress={() => setTime(item)} key={item}>
+                                                <Text
+                                                    style={
+                                                    [
+                                                        styles.Time,
+                                                        item == time ? {backgroundColor: "#b07cba"} : {backgroundColor: "#804c8a"}
+                                                    ]}
+                                                >
+                                                    {item}
+                                                </Text>
+                                            </Pressable>
+                                            );
+                                        })
+                                    }
                                 </View>
                                 {time == "" ?
                                     <></> : 
                                     <View style={{flexDirection: "row", gap: 10}}>
-                                        <Pressable style={styles.ConfirmBtn} onPress={() => SalvarAgendamento()}>
-                                            Confirmar
+                                        <Pressable onPress={() => SalvarAgendamento()}>
+                                            <Text style={styles.ConfirmBtn}>Confirmar</Text>
                                         </Pressable>
-                                        <Pressable style={styles.CancelBtn} onPress={() => setTime("")}>
-                                            Cancelar
+                                        <Pressable onPress={() => setTime("")}>
+                                            <Text style={styles.CancelBtn}>Cancelar</Text>
                                         </Pressable>
                                     </View>
                                 }
