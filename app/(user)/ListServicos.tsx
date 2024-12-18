@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Image, Platform, View, FlatList, Text, Pressable } from 'react-native';
 import { DatePickerInput, TimePickerModal } from 'react-native-paper-dates';
 import Services from "@/data/servicos.json"
 import Colors from "@/data/colors.json"
 import PickerDate from '@/components/PickerDate';
 import Times from "@/data/times.json"
+import {doc, getDocs, addDoc, setDoc, getDoc, collection} from 'firebase/firestore'
+import { Firestore } from '@/services/firebase';
 
 interface Servico
 {
@@ -12,6 +14,7 @@ interface Servico
     name : string;
     price : number;
     duration : number;
+    type : string;
 }
 
 interface Agendamento
@@ -26,18 +29,79 @@ export default function ListServicos()
     const [time, setTime] = useState<string>("");
     const [date, setDate] = useState<Date>(new Date());
     const [Selected, SetSelected] = useState<Servico | null>(null)
+    const [ReservedTimes, SetReservedTimes] = useState<boolean[]>([]);
 
     function findTimes()
     {
         let dateString = date.toISOString().substring(0, 10);
+        getDocs(collection(Firestore, "Agendamentos"))
+        .then((data) =>
+        {
+            const reserves = data.docs.filter((item) =>
+            {
+                if(item.data().date == dateString)
+                {
+                    return item
+                }
+            }).map((item) =>
+            {
+                return item.data().time;
+            }).sort((a : string, b : string) => (a.localeCompare(b)))
+
+            //console.log(reserves)
+
+            let ResTimes = []
+
+            for(let i = 0, j = 0; i < Times.length; ++i)
+            {
+                if(j < reserves.length && Times[i] == reserves[j])
+                {
+                    ResTimes.push(false)
+                    ++j;
+                }else
+                {
+                    ResTimes.push(true)
+                }
+            }
+
+            SetReservedTimes(ResTimes);
+        });
     }
+
+    useEffect(() =>
+    {
+        findTimes();
+    }, [date, Selected])
 
     function SalvarAgendamento()
     {
-     //   const Ag : Agendamento =
+        if(Selected == null || time == "")
         {
-
+            return;
         }
+        const Ag : Agendamento =
+        {
+            service: Selected,
+            date: date.toISOString().substring(0, 10),
+            time: time
+        }
+        SelectService(null);
+
+        addDoc(collection(Firestore, "Agendamentos"), Ag);
+    }
+
+    function SelectService(Service : Servico | null)
+    {
+        SetSelected((prev) =>(prev == Service ? null : Service));
+        setTime("");
+        findTimes();
+    }
+
+    function CheckTimes()
+    {
+        let ret = false;
+        ReservedTimes.forEach(item => {if(item){ret = true}});
+        return ret;
     }
 
     return (
@@ -60,7 +124,7 @@ export default function ListServicos()
                     })
                     return(
                         <View style={[styles.Card, {borderColor: Color?.color}]}>
-                            <Pressable onPress={() => SetSelected(item.item)}>
+                            <Pressable onPress={() => SelectService(item.item)}>
                                 <Text style={styles.MainText}>{item.item.name}</Text>
                                 <View style={styles.Line}>
                                     <Text style={styles.Price}>R$ {item.item.price.toFixed(2)}</Text>
@@ -69,33 +133,48 @@ export default function ListServicos()
                             </Pressable>
                             {item.item.id == Selected?.id ?
                             <>
-                                <PickerDate onChange={(date : Date) => {setDate(date); setTime("");}} value={date}/>
+                                <View style={styles.DatetimeContainer}>
+                                    <View style={styles.TimeDisplay}>
+                                        <Text style={{fontSize: time == "" ? 17 : 12, color: "#49454f"}}>HH:MM</Text>
+                                        {time != "" ? 
+                                        <Text style={{fontSize: 17}}>{time}</Text>
+                                        : <></>
+                                        }
+                                    </View>
+                                    <PickerDate onChange={(date : Date) => {setDate(date); setTime(""); findTimes();}} value={date}/>
+                                </View>
                                 <View style={styles.TimeContainer}>
-                                    {Times.map((item) =>
                                     {
-                                        return(
-                                        <Pressable onPress={() => setTime(item)} key={item}>
-                                            <Text
-                                                style={
-                                                [
-                                                    styles.Time,
-                                                    item == time ? {backgroundColor: "#b07cba"} : {backgroundColor: "#804c8a"}
-                                                ]}
-                                            >
-                                                {item}
-                                            </Text>
-                                        </Pressable>
-                                        )
-                                    })}
+                                        Times.map((item, index) =>
+                                        {
+                                            if(!ReservedTimes[index]|| Date.now() > Date.parse(date.toISOString().substring(0, 10) + "T" + item))
+                                            {
+                                                return(<></>)
+                                            }
+                                            return(
+                                            <Pressable onPress={() => setTime(item)} key={item}>
+                                                <Text
+                                                    style={
+                                                    [
+                                                        styles.Time,
+                                                        item == time ? {backgroundColor: "#b07cba"} : {backgroundColor: "#804c8a"}
+                                                    ]}
+                                                >
+                                                    {item}
+                                                </Text>
+                                            </Pressable>
+                                            );
+                                        })
+                                    }
                                 </View>
                                 {time == "" ?
                                     <></> : 
                                     <View style={{flexDirection: "row", gap: 10}}>
-                                        <Pressable style={styles.ConfirmBtn}>
-                                            Confirmar
+                                        <Pressable onPress={() => SalvarAgendamento()}>
+                                            <Text style={styles.ConfirmBtn}>Confirmar</Text>
                                         </Pressable>
-                                        <Pressable style={styles.CancelBtn}>
-                                            Cancelar
+                                        <Pressable onPress={() => setTime("")}>
+                                            <Text style={styles.CancelBtn}>Cancelar</Text>
                                         </Pressable>
                                     </View>
                                 }
@@ -198,5 +277,26 @@ const styles = StyleSheet.create(
         paddingVertical: 2,
         width: 108,
         textAlign: "center"
+    },
+    DatetimeContainer:
+    {
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "stretch",
+        backgroundColor: "#e7e0ec",
+        flexWrap: "wrap",
+        height: "auto",
+        maxWidth: "100%"
+    },
+    TimeDisplay:
+    {
+        justifyContent: "center",
+        alignItems: "center",
+        borderColor: "#98929d",
+        borderBottomWidth: 1,
+        minWidth: "auto",
+        maxHeight: "auto",
+        flex: 1,
+        fontFamily: "sans-serif"
     }
 });

@@ -4,22 +4,38 @@ import Colors from "@/data/colors.json"
 import { doc, getDocs, collection } from "firebase/firestore"
 import { Firestore } from '@/services/firebase';
 
+interface Servico
+{
+    id : number;
+    name : string;
+    price : number;
+    duration : number;
+    type : string
+}
+
 interface Agendamento
 {
-    name : string
-    price : number
-    duration : number
-    date : string
-    type : string
+    service : Servico
+    time : string;
+    date : string;
 }
 
 export default function Agendamentos()
 {
-    const [Data, SetData] = useState<Agendamento[]>([]);
+    const [Data, SetData] = useState<any[]>([]);
 
     useEffect(() =>
     {
-        
+        getDocs(collection(Firestore, "Agendamentos"))
+        .then((data) =>
+        {
+            SetData
+            (
+                data.docs.map((item => (item.data())))
+                .filter((item) => {if(Date.now() < Date.parse(item.date + "T" + item.time)){return item}})
+                .sort((a : any, b : any) => (Date.parse(a.date + "T" + a.time) - Date.parse(b.date + "T" + b.time)))
+            )
+        })
     },[]);
 
     return (
@@ -31,29 +47,29 @@ export default function Agendamentos()
             {Data.length ? 
                 <FlatList
                     data={Data}
-                    keyExtractor={(item) => (Math.random().toString() + item.name)} 
+                    keyExtractor={(item) => (Math.random().toString() + item.service.name)} 
                     renderItem={(item) =>
                     {
                         const Color = Colors.find((color) =>
                         {
-                            if(color.type == item.item.type)
+                            if(color.type == item.item.service.type)
                             {
                                 return color
                             }
                         })
-                        let d = new Date(Date.parse(item.item.date));
+                        let d = new Date(Date.parse(item.item.date + "T" + item.item.time));
                         return(
                         <View style={[styles.Card, {borderColor: Color?.color}]}>
-                            <Text style={styles.MainText}>{item.item.name}</Text>
+                            <Text style={styles.MainText}>{item.item.service.name}</Text>
                             <View style={styles.Line}>
-                                <Text style={styles.Price}>R$ {item.item.price.toFixed(2)}</Text>
-                                <Text style={{fontSize: 16}}>{item.item.duration} min</Text>
+                                <Text style={styles.Price}>R$ {item.item.service.price.toFixed(2)}</Text>
+                                <Text style={{fontSize: 16}}>{item.item.service.duration} min</Text>
                             </View>
                             <View style={styles.Line}>
                                 <Text style={styles.Price}>{d.toLocaleDateString()}</Text>
                                 <Text style={styles.Price}>{d.toLocaleTimeString()}</Text>
                             </View>
-                            <Pressable style={styles.CancelBtn}>Cancelar</Pressable>
+                            <Pressable><Text style={styles.CancelBtn}>Cancelar</Text></Pressable>
                         </View>
                         )
                     }}

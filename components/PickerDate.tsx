@@ -12,6 +12,7 @@ export default function PickerDate({onChange, value} : {onChange : Function, val
                 onChange={(date) => {onChange(date)}}
                 locale="pt"
                 value={value}
+                style={{width: "100%"}}
             />
         </View>
     </>
