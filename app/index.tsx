@@ -10,6 +10,26 @@ export default function LoginScreen() {
     const [mail, setMail] = useState("");
     const [pass, setPass] = useState("");
 
+    // const encoded = Buffer.from(`${apiKey}:${apiSecret}`).toString('base64')
+
+    // fetch('https://api.mailjet.com/v3.1/send', {
+    //     mode: "no-cors",
+    //     method: "POST",
+    //     headers: {
+    //         Authorization: "Basic " + encoded
+    //     },
+    //     body: JSON.stringify({
+    //         FromEmail: 'sampaioeeduardo37@gmail.com',
+    //         FromName: 'Mailjet Pilot',
+    //         Subject: 'Your email flight plan!',
+    //         'Text-part':
+    //         'Dear passenger, welcome to Mailjet! May the delivery force be with you!',
+    //         'Html-part':
+    //         '<h3>Dear passenger, welcome to <a href="https://www.mailjet.com/">Mailjet</a>!<br />May the delivery force be with you!',
+    //         Recipients: [{ Email: 'sampaioeeduardo37@gmail.com' }]
+    //     })
+    // })
+
     const signIn = () => {
         signInWithEmailAndPassword(Auth, mail, pass)
         .then(() => {

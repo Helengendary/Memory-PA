@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Image, Platform, View, FlatList, Text, Pressable } from 'react-native';
+import { StyleSheet, Image, Platform, View, FlatList, Text, Pressable, Touchable, TouchableOpacity, TextInput } from 'react-native';
 import { DatePickerInput, TimePickerModal } from 'react-native-paper-dates';
 import Services from "@/data/servicos.json"
 import Colors from "@/data/colors.json"
@@ -26,10 +26,19 @@ interface Agendamento
 
 export default function ListServicos()
 {
+    const [newName, setNewName] = useState<string>("");
+    const [newPrice, setNewPrice] = useState<string>("");
+    const [newDuration, setNewDuration] = useState<string>("");
+    const [newType, setNewType] = useState<string>("");
+    const [modal, setModal] = useState<boolean>(false);
     const [time, setTime] = useState<string>("");
     const [date, setDate] = useState<Date>(new Date());
     const [Selected, SetSelected] = useState<Servico | null>(null)
+    const [services, setServices] = useState<Servico[]>([])
     const [ReservedTimes, SetReservedTimes] = useState<boolean[]>([]);
+    //const RNFS = require('react-native-fs');
+
+    //const arquivo = RNFS.DocumentDirectoryPath + "/data/servicos.json"
 
     function findTimes()
     {
@@ -68,8 +77,19 @@ export default function ListServicos()
         });
     }
 
+    function GetServices()
+    {
+        getDocs(collection(Firestore, "Servicos"))
+        .then((data) =>
+        {
+            let servicos : any = data.docs.map((item) => ({id: item.id ,...item.data()}))
+            setServices(servicos);
+        })
+    }
+
     useEffect(() =>
     {
+        GetServices()
         findTimes();
     }, [date, Selected])
 
@@ -97,6 +117,17 @@ export default function ListServicos()
         findTimes();
     }
 
+    const newProduct = () => {
+        addDoc(collection(Firestore, "Servicos"), {
+            "name" : newName,
+            "price" : parseFloat(newPrice),
+            "duration" : parseInt(newDuration),
+            "type" : newType
+        });
+        setModal(false);
+        GetServices()
+    }
+
     function CheckTimes()
     {
         let ret = false;
@@ -111,7 +142,7 @@ export default function ListServicos()
         </View>
         <View style={styles.CardContainer}>
             <FlatList
-                data={Services}
+                data={services}
                 keyExtractor={(item) => (Math.random().toString() + item.id)}
                 renderItem={(item) =>
                 {
@@ -184,6 +215,16 @@ export default function ListServicos()
                     )
                 }}
             />
+        <View style={modal? styles.modal: {display: "none"}}>
+            <Text style={{fontSize: 20}}>Novo Serviço</Text>
+            <TextInput onChangeText={setNewName} style={styles.input} placeholder="Digite o nome do serviço"/>
+            <TextInput onChangeText={setNewPrice} style={styles.input} placeholder="Digite o preço do serviço"/>
+            <TextInput onChangeText={setNewDuration} style={styles.input} placeholder="Digite a duração do serviço"/>
+            <TextInput onChangeText={setNewType} style={styles.input} placeholder="Digite o tipo do serviço"/>
+
+            <TouchableOpacity style={{ alignItems: "center" , padding: 10, marginVertical: 10, marginHorizontal: 40, backgroundColor: "#824C8A", borderRadius: 12}} onPress={newProduct}><Text style={{color: "white"}}>Enviar</Text></TouchableOpacity>
+        </View>
+        <TouchableOpacity onPress={() => setModal(!modal)} style={{ alignItems: "center" , padding: 10, marginVertical: 10, marginHorizontal: 40, backgroundColor: "#824C8A", borderRadius: 12}}><Text style={{color: "white"}}>Novo</Text></TouchableOpacity>
         </View>
     </>
     );
@@ -191,6 +232,26 @@ export default function ListServicos()
 
 const styles = StyleSheet.create(
 {
+    modal: {
+        right: 35,
+        display: "flex", 
+        height: "70%", 
+        alignItems: "center", 
+        position: "absolute", 
+        padding: 20, 
+        gap: 10, 
+        backgroundColor: "white",
+        borderRadius: 15
+    },
+    input: {
+        padding: 10, 
+        backgroundColor: "#824C8A", 
+        borderRadius: 7, 
+        color: "#dedede",
+        width: 300,
+        height: 60,
+        fontSize: 15
+    },
     Card:
     {
         backgroundColor: "#ffffff",
