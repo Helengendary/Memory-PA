@@ -25,7 +25,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="gendamentos"
+        name="ListServicos"
         options={{
           headerShown: false,
           title: '',
